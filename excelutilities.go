@@ -71,9 +71,18 @@ func WiteCell(msg interface{}) {
 func WiteCellln(msg interface{}) {
 	WiteCell(msg)
 	line++
+	col = 1
 }
 func WiteCellnc(msg interface{}) {
 	WiteCell(msg)
+	col++
+}
+func WiteBoolCellnc(msg bool) {
+	if msg {
+		WiteCell("X")
+	} else {
+		WiteCell("-")
+	}
 	col++
 }
 
