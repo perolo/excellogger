@@ -21,6 +21,7 @@ func NewFile() {
 }
 func NextLine() {
 	line++
+	ResetCol()
 }
 func NextCol() {
 	col++
@@ -125,6 +126,8 @@ func SetCellFontHeader() {
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
+	err = fexcel.SetRowHeight(sheet,line,24)
+	Check(err)
 }
 func SetCellFontHeader2() {
 	axis, err := excelize.CoordinatesToCellName(col, line)
@@ -133,6 +136,8 @@ func SetCellFontHeader2() {
 	style, err := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":16,"color":"#777777"}}`)
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
+	Check(err)
+	err = fexcel.SetRowHeight(sheet,line,16)
 	Check(err)
 }
 func SetTableHeader() {
