@@ -78,6 +78,18 @@ func WiteCellnc(msg interface{}) {
 	WiteCell(msg)
 	col++
 }
+//xlsx.SetCellHyperLink("Sheet1", "A3", "https://github.com/360EntSecGroup-Skylar/excelize", "External")
+func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
+	axis, err := excelize.CoordinatesToCellName(col, line)
+	Check(err)
+	err = fexcel.SetCellValue(sheet, axis, msg)
+	Check(err)
+	err = fexcel.SetCellHyperLink(sheet, axis, hyperlink, "External")
+	Check(err)
+	col++
+
+}
+
 func WiteBoolCellnc(msg bool) {
 	if msg {
 		WiteCell("X")
@@ -105,7 +117,14 @@ func SetCellStyleCenter() {
 	Check(err)
 }
 
-
+func SetCellStyleColor(color string) {
+	axis, err := excelize.CoordinatesToCellName(col, line)
+	Check(err)
+	style, err := fexcel.NewStyle(`{"fill":{"type":"pattern","color":["`+color+`"],"pattern":1}}`)
+	Check(err)
+	err = fexcel.SetCellStyle(sheet, axis, axis, style)
+	Check(err)
+}
 func SetCellStyleRotate() {
 	SetCellStyleRotateXY(col, line)
 }
