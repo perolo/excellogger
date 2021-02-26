@@ -1,7 +1,9 @@
 package excelutils
 
 import (
+	"git.aa.st/perolo/confluence-utils/Utilities"
 	excelize "github.com/360EntSecGroup-Skylar/excelize"
+	"time"
 )
 
 var line, col, auforFilterStartcol, auforFilterStartrow int
@@ -41,7 +43,7 @@ func WriteColumnsHeaderln(data []string) {
 }
 func WriteColumnsHeaderRotln(data []string) {
 	for _, v := range data {
-		SetTableHeader()
+		SetTableHeaderRot()
 		WiteCell(v)
 		col++
 	}
@@ -55,11 +57,11 @@ func WriteColumns(data []string) {
 		WiteCell(v)
 		col++
 	}
-	col = 1
 }
 
 func WriteColumnsln(data []string) {
 	WriteColumns(data)
+	col = 1
 	line++
 }
 
@@ -199,7 +201,15 @@ func SetColWidth(startcol, endcol string, width float64) {
 	err := fexcel.SetColWidth(sheet, startcol, endcol, width)
 	Check(err)
 }
+
+func SetRowHeight(height float64) {
+	err := fexcel.SetRowHeight(sheet, line, height)
+	Check(err)
+}
 func SaveAs(name string) {
+	if !Utilities.IsWritable(name) {
+		time.Sleep(1)
+	}
 	err := fexcel.SaveAs(name)
 	Check(err)
 
