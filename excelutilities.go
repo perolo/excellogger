@@ -197,6 +197,12 @@ func autoFilter(uppperleft string) {
 	err = fexcel.AutoFilter(sheet, uppperleft, axis, "")
 }
 
+func SetCell(txt string, x int , y int) {
+	axis, err := excelize.CoordinatesToCellName(x, y)
+	err = fexcel.SetCellValue(sheet, axis, txt)
+	Check(err)
+}
+
 func SetColWidth(startcol, endcol string, width float64) {
 	err := fexcel.SetColWidth(sheet, startcol, endcol, width)
 	Check(err)
@@ -213,4 +219,14 @@ func SaveAs(name string) {
 	err := fexcel.SaveAs(name)
 	Check(err)
 
+}
+
+func BoolToEmoji(syn bool) string {
+	emo := ""
+	if syn {
+		emo = "✔"
+	} else {
+		emo = "❌"
+	}
+	return emo
 }
