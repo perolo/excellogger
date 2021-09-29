@@ -1,12 +1,12 @@
 package excelutils
 
 import (
-	"git.aa.st/perolo/confluence-utils/Utilities"
+	"git.aa.st/perolo/confluence-utils/Utilities/htmlutils"
 	excelize "github.com/360EntSecGroup-Skylar/excelize"
 	"time"
 )
 
-var line, col, auforFilterStartcol, auforFilterStartrow int
+var line, col, auforFilterStartcol, auforFilterStartrow, maxcol int
 var fexcel *excelize.File
 var sheet string
 
@@ -15,10 +15,17 @@ func Check(e error) {
 		panic(e)
 	}
 }
+func max(x, y int) int {
+	if x < y {
+		return y
+	}
+	return x
+}
 func NewFile() {
 	fexcel = excelize.NewFile()
 	line = 1
 	col = 1
+	maxcol = max(maxcol,col)
 	sheet = "Sheet1"
 }
 func NextLine() {
@@ -27,6 +34,7 @@ func NextLine() {
 }
 func NextCol() {
 	col++
+	maxcol = max(maxcol,col)
 }
 func ResetCol() {
 	col = 1
@@ -37,6 +45,7 @@ func WriteColumnsHeaderln(data []string) {
 		SetTableHeader()
 		WiteCell(v)
 		col++
+		maxcol = max(maxcol,col)
 	}
 	col = 1
 	line++
@@ -46,6 +55,7 @@ func WriteColumnsHeaderRotln(data []string) {
 		SetTableHeaderRot()
 		WiteCell(v)
 		col++
+		maxcol = max(maxcol,col)
 	}
 	col = 1
 	line++
@@ -56,6 +66,7 @@ func WriteColumns(data []string) {
 	for _, v := range data {
 		WiteCell(v)
 		col++
+		maxcol = max(maxcol,col)
 	}
 }
 
@@ -79,6 +90,7 @@ func WiteCellln(msg interface{}) {
 func WiteCellnc(msg interface{}) {
 	WiteCell(msg)
 	col++
+	maxcol = max(maxcol,col)
 }
 //xlsx.SetCellHyperLink("Sheet1", "A3", "https://github.com/360EntSecGroup-Skylar/excelize", "External")
 func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
@@ -89,7 +101,7 @@ func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
 	err = fexcel.SetCellHyperLink(sheet, axis, hyperlink, "External")
 	Check(err)
 	col++
-
+	maxcol = max(maxcol,col)
 }
 
 func WiteBoolCellnc(msg bool) {
@@ -99,6 +111,7 @@ func WiteBoolCellnc(msg bool) {
 		WiteCell("-")
 	}
 	col++
+	maxcol = max(maxcol,col)
 }
 
 func SetCellStyleRotateXY(q, v int) {
@@ -192,7 +205,7 @@ func autoFilter(uppperleft string) {
 	rows, err := fexcel.GetRows(sheet)
 	Check(err)
 	nrows := len(rows)
-	ncols := len(rows[nrows-1])
+	ncols := maxcol
 	axis, err := excelize.CoordinatesToCellName(ncols, nrows)
 	err = fexcel.AutoFilter(sheet, uppperleft, axis, "")
 }
@@ -213,7 +226,7 @@ func SetRowHeight(height float64) {
 	Check(err)
 }
 func SaveAs(name string) {
-	if !Utilities.IsWritable(name) {
+	if !htmlutils.IsWritable(name) {
 		time.Sleep(1)
 	}
 	err := fexcel.SaveAs(name)
