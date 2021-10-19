@@ -2,13 +2,14 @@ package excelutils
 
 import (
 	"git.aa.st/perolo/confluence-utils/Utilities/htmlutils"
-	excelize "github.com/360EntSecGroup-Skylar/excelize"
+	"github.com/360EntSecGroup-Skylar/excelize"
 	"time"
 )
 
 var line, col, auforFilterStartcol, auforFilterStartrow, maxcol int
 var fexcel *excelize.File
 var sheet string
+var colwidth [20]int
 
 func Check(e error) {
 	if e != nil {
@@ -25,8 +26,11 @@ func NewFile() {
 	fexcel = excelize.NewFile()
 	line = 1
 	col = 1
-	maxcol = max(maxcol,col)
+	maxcol = 1
 	sheet = "Sheet1"
+	for k := range colwidth {
+		colwidth[k] = 5
+	}
 }
 func NextLine() {
 	line++
@@ -34,7 +38,7 @@ func NextLine() {
 }
 func NextCol() {
 	col++
-	maxcol = max(maxcol,col)
+	maxcol = max(maxcol, col)
 }
 func ResetCol() {
 	col = 1
@@ -45,7 +49,7 @@ func WriteColumnsHeaderln(data []string) {
 		SetTableHeader()
 		WiteCell(v)
 		col++
-		maxcol = max(maxcol,col)
+		maxcol = max(maxcol, col)
 	}
 	col = 1
 	line++
@@ -55,18 +59,17 @@ func WriteColumnsHeaderRotln(data []string) {
 		SetTableHeaderRot()
 		WiteCell(v)
 		col++
-		maxcol = max(maxcol,col)
+		maxcol = max(maxcol, col)
 	}
 	col = 1
 	line++
 }
 
-
 func WriteColumns(data []string) {
 	for _, v := range data {
 		WiteCell(v)
 		col++
-		maxcol = max(maxcol,col)
+		maxcol = max(maxcol, col)
 	}
 }
 
@@ -81,7 +84,21 @@ func WiteCell(msg interface{}) {
 	Check(err)
 	err = fexcel.SetCellValue(sheet, axis, msg)
 	Check(err)
+	if col < 20 {
+		strlen, _ := fexcel.GetCellValue(sheet, axis)
+		colwidth[col] = max(colwidth[col], len(strlen))
+	}
 }
+
+/*
+
+func GetColWidth(col int) (string, int){
+	colname,_ := excelize.ColumnNumberToName(col)
+	width := colwidth[col]
+	return colname, width
+}
+*/
+
 func WiteCellln(msg interface{}) {
 	WiteCell(msg)
 	line++
@@ -90,9 +107,8 @@ func WiteCellln(msg interface{}) {
 func WiteCellnc(msg interface{}) {
 	WiteCell(msg)
 	col++
-	maxcol = max(maxcol,col)
+	maxcol = max(maxcol, col)
 }
-//xlsx.SetCellHyperLink("Sheet1", "A3", "https://github.com/360EntSecGroup-Skylar/excelize", "External")
 func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
@@ -101,7 +117,7 @@ func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
 	err = fexcel.SetCellHyperLink(sheet, axis, hyperlink, "External")
 	Check(err)
 	col++
-	maxcol = max(maxcol,col)
+	maxcol = max(maxcol, col)
 }
 
 func WiteBoolCellnc(msg bool) {
@@ -111,7 +127,7 @@ func WiteBoolCellnc(msg bool) {
 		WiteCell("-")
 	}
 	col++
-	maxcol = max(maxcol,col)
+	maxcol = max(maxcol, col)
 }
 
 func SetCellStyleRotateXY(q, v int) {
@@ -135,7 +151,7 @@ func SetCellStyleCenter() {
 func SetCellStyleColor(color string) {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
-	style, err := fexcel.NewStyle(`{"fill":{"type":"pattern","color":["`+color+`"],"pattern":1}}`)
+	style, err := fexcel.NewStyle(`{"fill":{"type":"pattern","color":["` + color + `"],"pattern":1}}`)
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
@@ -160,7 +176,7 @@ func SetCellFontHeader() {
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
-	err = fexcel.SetRowHeight(sheet,line,24)
+	err = fexcel.SetRowHeight(sheet, line, 24)
 	Check(err)
 }
 func SetCellFontHeader2() {
@@ -171,7 +187,7 @@ func SetCellFontHeader2() {
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
-	err = fexcel.SetRowHeight(sheet,line,16)
+	err = fexcel.SetRowHeight(sheet, line, 16)
 	Check(err)
 }
 func SetTableHeader() {
@@ -210,15 +226,44 @@ func autoFilter(uppperleft string) {
 	err = fexcel.AutoFilter(sheet, uppperleft, axis, "")
 }
 
-func SetCell(txt string, x int , y int) {
+func SetCell(txt string, x int, y int) {
 	axis, err := excelize.CoordinatesToCellName(x, y)
 	err = fexcel.SetCellValue(sheet, axis, txt)
 	Check(err)
 }
 
+func SetCellBackgroundAxis(axis, color string) {
+	style, err := fexcel.NewStyle(`{"fill":{"type":"pattern","color":["` + color + `"],"pattern":1}}`)
+	Check(err)
+	err = fexcel.SetCellStyle(sheet, axis, axis, style)
+	Check(err)
+}
+
+func SetCellBackground(color string, x int, y int) {
+	axis, err := excelize.CoordinatesToCellName(x, y)
+	Check(err)
+	SetCellBackgroundAxis(axis, color)
+	//Check(err)
+}
+
 func SetColWidth(startcol, endcol string, width float64) {
 	err := fexcel.SetColWidth(sheet, startcol, endcol, width)
 	Check(err)
+}
+
+func SetAutoColWidth() {
+	for k := range colwidth {
+		if k == 0 {
+			k++
+		}
+		colname, _ := excelize.ColumnNumberToName(k)
+		width := colwidth[k] + 5
+		if width > 200 {
+			width = 200
+		}
+		err := fexcel.SetColWidth(sheet, colname, colname, float64(width))
+		Check(err)
+	}
 }
 
 func SetRowHeight(height float64) {
