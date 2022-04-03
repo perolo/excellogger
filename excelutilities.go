@@ -1,8 +1,9 @@
 package excelutils
 
 import (
-	"github.com/360EntSecGroup-Skylar/excelize"
 	"github.com/perolo/confluence-scripts/utilities/htmlutils"
+	//	"github.com/perolo/confluence-scripts/utilities/htmlutils"
+	"github.com/perolo/excelize"
 	"time"
 )
 
