@@ -1,16 +1,26 @@
 package excelutils
 
 import (
-	"github.com/perolo/confluence-scripts/utilities/htmlutils"
-	//	"github.com/perolo/confluence-scripts/utilities/htmlutils"
-	"github.com/perolo/excelize"
+	"github.com/perolo/myexcelize"
+	"os"
 	"time"
 )
 
 var line, col, auforFilterStartcol, auforFilterStartrow, maxcol int
-var fexcel *excelize.File
+var fexcel *myexcelize.File
 var sheet string
 var colwidth [20]int
+
+func IsWritable(name string) (isWritable bool) {
+	isWritable = false
+
+	_, err := os.OpenFile(name, os.O_WRONLY|os.O_TRUNC|os.O_CREATE, 0666)
+	if err != nil {
+		return isWritable
+	}
+	isWritable = true
+	return isWritable
+}
 
 func Check(e error) {
 	if e != nil {
@@ -24,7 +34,7 @@ func max(x, y int) int {
 	return x
 }
 func NewFile() {
-	fexcel = excelize.NewFile()
+	fexcel = myexcelize.NewFile()
 	line = 1
 	col = 1
 	maxcol = 1
@@ -81,7 +91,7 @@ func WriteColumnsln(data []string) {
 }
 
 func WiteCell(msg interface{}) {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
 	err = fexcel.SetCellValue(sheet, axis, msg)
 	Check(err)
@@ -94,7 +104,7 @@ func WiteCell(msg interface{}) {
 /*
 
 func GetColWidth(col int) (string, int){
-	colname,_ := excelize.ColumnNumberToName(col)
+	colname,_ := myexcelize.ColumnNumberToName(col)
 	width := colwidth[col]
 	return colname, width
 }
@@ -111,7 +121,7 @@ func WiteCellnc(msg interface{}) {
 	maxcol = max(maxcol, col)
 }
 func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
 	err = fexcel.SetCellValue(sheet, axis, msg)
 	Check(err)
@@ -132,7 +142,7 @@ func WiteBoolCellnc(msg bool) {
 }
 
 func SetCellStyleRotateXY(q, v int) {
-	axis, err := excelize.CoordinatesToCellName(q, v)
+	axis, err := myexcelize.CoordinatesToCellName(q, v)
 	Check(err)
 	style, err := fexcel.NewStyle(`{"alignment":{"text_rotation":90,"horizontal":"center"},"fill":{"type":"pattern","color":["#E0EBF5"],"pattern":1}}`)
 	Check(err)
@@ -140,9 +150,9 @@ func SetCellStyleRotateXY(q, v int) {
 	Check(err)
 }
 func SetCellStyleCenter() {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
-	//var style excelize.Style
+	//var style myexcelize.Style
 	style, err := fexcel.NewStyle(`{"alignment":{"horizontal":"center"}}`)
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
@@ -150,7 +160,7 @@ func SetCellStyleCenter() {
 }
 
 func SetCellStyleColor(color string) {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
 	style, err := fexcel.NewStyle(`{"fill":{"type":"pattern","color":["` + color + `"],"pattern":1}}`)
 	Check(err)
@@ -170,9 +180,9 @@ func SetCellStyleRotateN(count int) {
 	}
 }
 func SetCellFontHeader() {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
-	//var style excelize.Style
+	//var style myexcelize.Style
 	style, err := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":24,"color":"#777777"}}`)
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
@@ -181,9 +191,9 @@ func SetCellFontHeader() {
 	Check(err)
 }
 func SetCellFontHeader2() {
-	axis, err := excelize.CoordinatesToCellName(col, line)
+	axis, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
-	//var style excelize.Style
+	//var style myexcelize.Style
 	style, err := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":16,"color":"#777777"}}`)
 	Check(err)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
@@ -192,7 +202,7 @@ func SetCellFontHeader2() {
 	Check(err)
 }
 func SetTableHeader() {
-	cellname, err := excelize.CoordinatesToCellName(col, line)
+	cellname, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
 	style, err := fexcel.NewStyle(`{"alignment":{"horizontal":"center","vertical":"center"},"fill":{"type":"pattern","color":["#E0EBF5"],"pattern":1}}`)
 	Check(err)
@@ -200,7 +210,7 @@ func SetTableHeader() {
 	Check(err)
 }
 func SetTableHeaderRot() {
-	cellname, err := excelize.CoordinatesToCellName(col, line)
+	cellname, err := myexcelize.CoordinatesToCellName(col, line)
 	Check(err)
 	style, err := fexcel.NewStyle(`{"alignment":{"text_rotation":90,"horizontal":"center","vertical":"center"},"fill":{"type":"pattern","color":["#E0EBF5"],"pattern":1}}`)
 	Check(err)
@@ -213,7 +223,7 @@ func AutoFilterStart() {
 	auforFilterStartrow = line
 }
 func AutoFilterEnd() {
-	axis, err := excelize.CoordinatesToCellName(auforFilterStartcol, auforFilterStartrow)
+	axis, err := myexcelize.CoordinatesToCellName(auforFilterStartcol, auforFilterStartrow)
 	Check(err)
 	autoFilter(axis)
 }
@@ -223,12 +233,12 @@ func autoFilter(uppperleft string) {
 	Check(err)
 	nrows := len(rows)
 	ncols := maxcol
-	axis, err := excelize.CoordinatesToCellName(ncols, nrows)
+	axis, err := myexcelize.CoordinatesToCellName(ncols, nrows)
 	err = fexcel.AutoFilter(sheet, uppperleft, axis, "")
 }
 
 func SetCell(txt string, x int, y int) {
-	axis, err := excelize.CoordinatesToCellName(x, y)
+	axis, err := myexcelize.CoordinatesToCellName(x, y)
 	err = fexcel.SetCellValue(sheet, axis, txt)
 	Check(err)
 }
@@ -241,7 +251,7 @@ func SetCellBackgroundAxis(axis, color string) {
 }
 
 func SetCellBackground(color string, x int, y int) {
-	axis, err := excelize.CoordinatesToCellName(x, y)
+	axis, err := myexcelize.CoordinatesToCellName(x, y)
 	Check(err)
 	SetCellBackgroundAxis(axis, color)
 	//Check(err)
@@ -257,7 +267,7 @@ func SetAutoColWidth() {
 		if k == 0 {
 			k++
 		}
-		colname, _ := excelize.ColumnNumberToName(k)
+		colname, _ := myexcelize.ColumnNumberToName(k)
 		width := colwidth[k] + 5
 		if width > 200 {
 			width = 200
@@ -272,7 +282,7 @@ func SetRowHeight(height float64) {
 	Check(err)
 }
 func SaveAs(name string) {
-	if !htmlutils.IsWritable(name) {
+	if !IsWritable(name) {
 		time.Sleep(1)
 	}
 	err := fexcel.SaveAs(name)
