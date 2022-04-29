@@ -1,9 +1,10 @@
 package excelutils
 
 import (
-	"github.com/perolo/myexcelize"
 	"os"
 	"time"
+
+	myexcelize "github.com/xuri/excelize/v2"
 )
 
 var line, col, auforFilterStartcol, auforFilterStartrow, maxcol int

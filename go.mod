@@ -2,15 +2,15 @@ module github.com/perolo/excel-utils
 
 go 1.18
 
-require github.com/perolo/myexcelize v1.4.2-0.20220404082214-4c978f745e84
+require github.com/xuri/excelize/v2 v2.6.1-0.20220429055309-0f93bd23c97a
 
 require (
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
 	github.com/richardlehane/mscfb v1.0.4 // indirect
 	github.com/richardlehane/msoleps v1.0.1 // indirect
-	github.com/xuri/efp v0.0.0-20220216053911-6d8731f62184 // indirect
-	github.com/xuri/nfp v0.0.0-20220215121256-71f1502108b5 // indirect
-	golang.org/x/crypto v0.0.0-20220331220935-ae2d96664a29 // indirect
-	golang.org/x/net v0.0.0-20220403103023-749bd193bc2b // indirect
+	github.com/xuri/efp v0.0.0-20220407160117-ad0f7a785be8 // indirect
+	github.com/xuri/nfp v0.0.0-20220409054826-5e722a1d9e22 // indirect
+	golang.org/x/crypto v0.0.0-20220408190544-5352b0902921 // indirect
+	golang.org/x/net v0.0.0-20220407224826-aac1ed45d8e3 // indirect
 	golang.org/x/text v0.3.7 // indirect
 )
