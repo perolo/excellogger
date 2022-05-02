@@ -28,6 +28,7 @@ func Check(e error) {
 		panic(e)
 	}
 }
+
 func max(x, y int) int {
 	if x < y {
 		return y
