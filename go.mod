@@ -1,4 +1,4 @@
-module github.com/perolo/excel-utils
+module github.com/perolo/excellogger
 
 go 1.18
 
