@@ -11,7 +11,6 @@ import (
 var line, col, auforFilterStartcol, auforFilterStartrow, maxcol int
 var fexcel *excelize.File
 var sheet string
-var colwidth [20]int
 
 func IsWritable(name string) (isWritable bool) {
 	isWritable = false
@@ -66,7 +65,7 @@ func NewSheet(name string) error {
 
 	for _, oldsheets := range fexcel.WorkBook.Sheets.Sheet {
 		if oldsheets.Name == name {
-			return errors.New("Sheet already exists")
+			return errors.New("sheet already exists")
 		}
 	}
 	fexcel.NewSheet(name)
@@ -85,17 +84,19 @@ func SelectSheet(name string) error {
 			return nil
 		}
 	}
-	return errors.New("Sheet not found")
+	return errors.New("sheet not found")
 }
 
 func NextLine() {
 	line++
 	ResetCol()
 }
+
 func NextCol() {
 	col++
 	maxcol = max(maxcol, col)
 }
+
 func ResetCol() {
 	col = 1
 }
@@ -110,6 +111,7 @@ func WriteColumnsHeaderln(data []string) {
 	col = 1
 	line++
 }
+
 func WriteColumnsHeaderRotln(data []string) {
 	for _, v := range data {
 		SetTableHeaderRot()
@@ -140,31 +142,20 @@ func WiteCell(msg interface{}) {
 	Check(err)
 	err = fexcel.SetCellValue(sheet, axis, msg)
 	Check(err)
-	if col < 20 {
-		strlen, _ := fexcel.GetCellValue(sheet, axis)
-		colwidth[col] = max(colwidth[col], len(strlen))
-	}
 }
-
-/*
-
-func GetColWidth(col int) (string, int){
-	colname,_ := excelize.ColumnNumberToName(col)
-	width := colwidth[col]
-	return colname, width
-}
-*/
 
 func WiteCellln(msg interface{}) {
 	WiteCell(msg)
 	line++
 	col = 1
 }
+
 func WiteCellnc(msg interface{}) {
 	WiteCell(msg)
 	col++
 	maxcol = max(maxcol, col)
 }
+
 func WiteCellHyperLinknc(msg interface{}, hyperlink string) {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
@@ -194,12 +185,13 @@ func SetCellStyleRotateXY(q, v int) {
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
 }
+
 func SetCellStyleCenter() {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
 	//var style excelize.Style
-	style, err := fexcel.NewStyle(`{"alignment":{"horizontal":"center"}}`)
-	Check(err)
+	style, err2 := fexcel.NewStyle(`{"alignment":{"horizontal":"center"}}`)
+	Check(err2)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
 }
@@ -212,9 +204,11 @@ func SetCellStyleColor(color string) {
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
 }
+
 func SetCellStyleRotate() {
 	SetCellStyleRotateXY(col, line)
 }
+
 func SetCellStyleRotateN(count int) {
 	var i, j int
 	i = col
@@ -224,28 +218,31 @@ func SetCellStyleRotateN(count int) {
 		i++
 	}
 }
+
 func SetCellFontHeader() {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
 	//var style excelize.Style
-	style, err := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":24,"color":"#777777"}}`)
-	Check(err)
+	style, err2 := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":24,"color":"#777777"}}`)
+	Check(err2)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
 	err = fexcel.SetRowHeight(sheet, line, 24)
 	Check(err)
 }
+
 func SetCellFontHeader2() {
 	axis, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
 	//var style excelize.Style
-	style, err := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":16,"color":"#777777"}}`)
-	Check(err)
+	style, err2 := fexcel.NewStyle(`{"font":{"bold":true,"family":"Times New Roman","size":16,"color":"#777777"}}`)
+	Check(err2)
 	err = fexcel.SetCellStyle(sheet, axis, axis, style)
 	Check(err)
 	err = fexcel.SetRowHeight(sheet, line, 16)
 	Check(err)
 }
+
 func SetTableHeader() {
 	cellname, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
@@ -254,6 +251,7 @@ func SetTableHeader() {
 	err = fexcel.SetCellStyle(sheet, cellname, cellname, style)
 	Check(err)
 }
+
 func SetTableHeaderRot() {
 	cellname, err := excelize.CoordinatesToCellName(col, line)
 	Check(err)
@@ -267,6 +265,7 @@ func AutoFilterStart() {
 	auforFilterStartcol = col
 	auforFilterStartrow = line
 }
+
 func AutoFilterEnd() {
 	axis, err := excelize.CoordinatesToCellName(auforFilterStartcol, auforFilterStartrow)
 	Check(err)
@@ -278,13 +277,16 @@ func autoFilter(uppperleft string) {
 	Check(err)
 	nrows := len(rows)
 	ncols := maxcol
-	axis, err := excelize.CoordinatesToCellName(ncols, nrows)
-	err = fexcel.AutoFilter(sheet, uppperleft, axis, "")
+	axis, err2 := excelize.CoordinatesToCellName(ncols, nrows)
+	Check(err2)
+	err2 = fexcel.AutoFilter(sheet, uppperleft, axis, "")
+	Check(err2)
 }
 
-func SetCell(txt string, x int, y int) {
+func SetCell(msg interface{}, x int, y int) {
 	axis, err := excelize.CoordinatesToCellName(x, y)
-	err = fexcel.SetCellValue(sheet, axis, txt)
+	Check(err)
+	err = fexcel.SetCellValue(sheet, axis, msg)
 	Check(err)
 }
 
@@ -299,7 +301,6 @@ func SetCellBackground(color string, x int, y int) {
 	axis, err := excelize.CoordinatesToCellName(x, y)
 	Check(err)
 	SetCellBackgroundAxis(axis, color)
-	//Check(err)
 }
 
 func SetColWidth(startcol, endcol string, width float64) {
@@ -308,16 +309,23 @@ func SetColWidth(startcol, endcol string, width float64) {
 }
 
 func SetAutoColWidth() {
-	for k := range colwidth {
-		if k == 0 {
-			k++
+	rows, err := fexcel.GetRows(sheet)
+	Check(err)
+
+	for k := 1; k < maxcol+1; k++ {
+		maxwidth := 0
+		for row := range rows {
+			axis, err2 := excelize.CoordinatesToCellName(k, row+1)
+			Check(err2)
+			strlen, _ := fexcel.GetCellValue(sheet, axis)
+			maxwidth = max(maxwidth, len(strlen))
 		}
 		colname, _ := excelize.ColumnNumberToName(k)
-		width := colwidth[k] + 5
+		width := maxwidth + 5
 		if width > 200 {
 			width = 200
 		}
-		err := fexcel.SetColWidth(sheet, colname, colname, float64(width))
+		err = fexcel.SetColWidth(sheet, colname, colname, float64(width))
 		Check(err)
 	}
 }
@@ -326,13 +334,13 @@ func SetRowHeight(height float64) {
 	err := fexcel.SetRowHeight(sheet, line, height)
 	Check(err)
 }
+
 func SaveAs(name string) {
 	if !IsWritable(name) {
-		time.Sleep(1)
+		time.Sleep(time.Second)
 	}
 	err := fexcel.SaveAs(name)
 	Check(err)
-
 }
 
 func BoolToEmoji(syn bool) string {
