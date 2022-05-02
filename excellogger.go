@@ -1,4 +1,4 @@
-package excelutils
+package excellogger
 
 import (
 	"errors"
